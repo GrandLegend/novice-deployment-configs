@@ -1,0 +1,81 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: novice-core-backend
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: novice-core-backend
+  template:
+    metadata:
+      labels:
+        app: novice-core-backend
+    spec:
+      nodeSelector:
+        "beta.kubernetes.io/os": linux
+      containers:
+      - name: core
+        image: noviceacr.azurecr.io/novice-core-back-end:81c7413e2dbb331cd947fa71d5ca2e11f97edc8a
+        env:
+        - name: ALLOW_EMPTY_PASSWORD
+          value: "yes"
+        ports:
+        - containerPort: 8080
+          name: core
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: novice-core-backend
+spec:
+  ports:
+  - port: 8081
+  selector:
+    app: novice-core-backend
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: novice-app
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: novice-app
+  strategy:
+    rollingUpdate:
+      maxSurge: 1
+      maxUnavailable: 1
+  minReadySeconds: 5 
+  template:
+    metadata:
+      labels:
+        app: novice-app
+    spec:
+      nodeSelector:
+        "beta.kubernetes.io/os": linux
+      containers:
+      - name: novice
+        image: noviceacr.azurecr.io/novice-app:064958b4537529d8b779218adc16d7e4148f1e3b
+        ports:
+        - containerPort: 80
+        resources:
+          requests:
+            cpu: 250m
+          limits:
+            cpu: 500m
+        env:
+        - name: novice-app
+          value: "novice-app"
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: novice-app
+spec:
+  type: LoadBalancer
+  ports:
+  - port: 8080
+  selector:
+    app: novice-app

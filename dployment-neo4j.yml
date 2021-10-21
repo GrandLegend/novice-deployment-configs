@@ -1,0 +1,23 @@
+neo4j:
+  resources:
+    cpu: "1"
+    memory: "2Gi"
+
+  # Uncomment to set the initial password
+  #password: "my-initial-password"
+
+  # Uncomment to use enterprise edition
+  edition: "enterprise"
+  acceptLicenseAgreement: "yes"
+
+volumes:
+  data:
+    mode: "volume"
+    volume:
+      azureDisk:
+        diskName: "my-neo4j-disk"
+        diskURI: "/subscriptions/3437dbd6-cf52-48e2-b588-35a0fab6a413/resourceGroups/dev-staging/providers/Microsoft.Compute/disks/neo4j-disk"
+        kind: Managed
+
+
+

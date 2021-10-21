@@ -1,0 +1,33 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: novice
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: novice
+  template:
+    metadata:
+      labels:
+        app: novice
+    spec:
+      containers:
+      - name: novice
+        image: noviceacr.azurecr.io/novice-angular:latest
+        ports:
+        - containerPort: 80
+        env:
+        - name: TITLE
+          value: "Welcome to Novice Education Service (AKS)"
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: novice
+spec:
+  type: ClusterIP
+  ports:
+  - port: 80
+  selector:
+    app: novice
