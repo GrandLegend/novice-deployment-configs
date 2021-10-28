@@ -1,27 +1,37 @@
 apiVersion: networking.k8s.io/v1
 kind: Ingress
 metadata:
-  name: novice-ingress
+  name: novice-ingress-dev
   annotations:
     kubernetes.io/ingress.class: nginx
     nginx.ingress.kubernetes.io/ssl-redirect: "false"
-    nginx.ingress.kubernetes.io/use-regex: "true"
+    nginx.ingress.kubernetes.io/enable-cors: "false"
     nginx.ingress.kubernetes.io/rewrite-target: /$1
+    nginx.ingress.kubernetes.io/use-regex: "true"
 spec:
   rules:
   - http:
       paths:
-      - path: /backend/core(/|$)(.*)
+      - path: /backend(\/.*)?
         pathType: Prefix
         backend:
           service:
             name: backend-core
             port:
               number: 8080
-      - path: /
-        pathType: Prefix
-        backend:
+---
+apiVersion: networking.k8s.io/v1
+kind: Ingress
+metadata:
+  name: novice-front-end-ingress-dev
+  annotations:
+    kubernetes.io/ingress.class: "nginx"
+    nginx.ingress.kubernetes.io/rewrite-target: /$1
+    nginx.ingress.kubernetes.io/ssl-redirect: "false"
+spec:
+      defaultBackend:
           service:
             name: novice
             port:
               number: 80
+              
